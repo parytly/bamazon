@@ -12,7 +12,8 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log('connected as id' + connection.threadId + "\n");
-    queryItems();
+    // queryItems();
+    startPrompt();
 })
 
 // DISPLAY ALL THE ITEMS
@@ -25,20 +26,35 @@ const queryItems = function () {
     });
 };
 // The app should then prompt users with two messages.
-function startPrompt() {
-    inquirer
-        .prompt([
-            {
-                name: 'shop',
-                type: 'input',
-                message: 'What do you like to buy?'
-            }
-        ]).then(function () {
-
-        })
-    yo
-
-};
-startPrompt();
 // The first should ask them the ID of the product they would like to buy.
+function startPrompt() {
+    connection.query("SELECT * FROM  products", function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: 'shop',
+                    type: 'checkbox',
+                    message: 'What do you like to buy?',
+                    choices: function () {
+                        var productChoices = [];
+                        for (var i = 0; i < res.length; i++) {
+                            productChoices.push(res[i].item_id + ' | ' + res[i].product_name);
+                        }
+                        return productChoices;
+                    }
+                },
+                {
+                    name: 'quantity',
+                    type: 'number',
+                    message: 'How many do you want?'
+                }
+            ]).then(function (answer) {
+                console.log(answer)
+                // updateQuantity();
+            })
+    });
+};
+
 // The second message should ask how many units of the product they would like to buy.
+
