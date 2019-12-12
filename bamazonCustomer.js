@@ -44,17 +44,26 @@ function startPrompt() {
                         return productChoices;
                     }
                 },
-                {
+                { // The second message should ask how many units of the product they would like to buy.
                     name: 'quantity',
                     type: 'number',
                     message: 'How many do you want?'
                 }
             ]).then(function (answer) {
-                console.log(answer)
-                // updateQuantity();
+                connection.query("SELECT * FROM  products", function (err, res) {
+                    // updateQuantity();
+                })
             })
     });
 };
 
-// The second message should ask how many units of the product they would like to buy.
-
+// UPDATE THE QUANTITY OF THE ITEM IN MYSQL
+function updateQuantity() {
+    connection.query('UPDATE products SET ? WHERE ?',
+        [
+            {
+                quantity: res.quantity - answer.quantity,
+            }
+        ]
+    );
+}
