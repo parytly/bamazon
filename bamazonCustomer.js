@@ -1,6 +1,12 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
+var Table = require('cli-table');
+var table = new Table({
+    head: ['Item_id', 'Product', 'Department', 'Price', 'Quantity'],
+    colWidths: [10, 20, 20, 20, 20]
+});
+
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -8,6 +14,7 @@ var connection = mysql.createConnection({
     password: 'password',
     database: 'bamazon_DB'
 });
+
 
 connection.connect(function (err) {
     if (err) throw err;
@@ -21,14 +28,30 @@ const queryItems = function () {
     connection.query("SELECT * FROM  products", function (err, res) {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
-            console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department + " | " + res[i].price + " | " + res[i].quantity)
+            // console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department + " | " + res[i].price + " | " + res[i].quantity)
+            // console.log(JSON.parse(res[i]))
+            // var tableData =
 
+            //         { 'Item_id': res[i].item_id },
+            //         { 'Product': res[i].product_name },
+            //         { 'Department': res[i].department },
+            //         { 'Price': res[i].price },
+            //         { 'Quantity': res[i].quantity }
+
+            // console.table(tableData)
+
+            table.push(
+                [res[i].item_id,
+                res[i].product_name,
+                res[i].department,
+                res[i].price,
+                res[i].quantity]
+            );
         };
+        console.log("\n Welcome to Bamazon!!!\n\n" + table.toString());
         startPrompt();
     });
-
 };
-
 
 // The app should then prompt users with two messages.
 // The first should ask them the ID of the product they would like to buy.
@@ -80,12 +103,12 @@ function startPrompt() {
                             console.log("\n Congrats on your purchase. Thank You for shopping. \n")
                             // reloads the list of products and prompts
                             // queryItems();
+                            connection.end();
                         }
                     );
                 }
             })
     });
 }
-
 
 
