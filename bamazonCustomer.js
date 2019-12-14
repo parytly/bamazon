@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
+// creating a table for the list of items
 var Table = require('cli-table');
 var table = new Table({
     head: ['Item_id', 'Product', 'Department', 'Price', 'Quantity'],
@@ -15,12 +16,10 @@ var connection = mysql.createConnection({
     database: 'bamazon_DB'
 });
 
-
 connection.connect(function (err) {
     if (err) throw err;
     console.log('connected as id' + connection.threadId + "\n");
     queryItems();
-    // startPrompt();
 })
 
 // DISPLAY ALL THE ITEMS
@@ -29,17 +28,6 @@ const queryItems = function () {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
             // console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department + " | " + res[i].price + " | " + res[i].quantity)
-            // console.log(JSON.parse(res[i]))
-            // var tableData =
-
-            //         { 'Item_id': res[i].item_id },
-            //         { 'Product': res[i].product_name },
-            //         { 'Department': res[i].department },
-            //         { 'Price': res[i].price },
-            //         { 'Quantity': res[i].quantity }
-
-            // console.table(tableData)
-
             table.push(
                 [res[i].item_id,
                 res[i].product_name,
@@ -64,7 +52,7 @@ function startPrompt() {
                 {
                     name: 'shop',
                     type: 'input',
-                    message: 'What do you like to buy? (enter in the item-id)',
+                    message: '\nWhat do you like to buy? (enter in the item-id)',
                     choices: function () {
                         var productChoices = [];
                         for (var i = 0; i < res.length; i++) {
@@ -77,15 +65,16 @@ function startPrompt() {
                 {
                     name: 'quantity',
                     type: 'number',
-                    message: 'How many do you want?'
+                    message: '\nHow many do you want?'
                 }
             ]).then(function (answer) {
                 var selectedItemQuantity = res[answer.shop - 1].quantity
-                // console.log(answer.quantity)
                 var newQuantity = selectedItemQuantity - answer.quantity
-                // console.log(newQuantity)
+
+                var balance = res[answer.shop - 1].price * answer.quantity
+
                 if (answer.quantity > selectedItemQuantity) {
-                    console.log("\n Insufficient quantity! Please choose a lower amount. \n")
+                    console.log("\n Insufficient quantity! Please select again. \n")
                     startPrompt();
                 } else {
                     // UPDATE THE QUANTITY OF THE ITEM IN MYSQL
@@ -100,9 +89,8 @@ function startPrompt() {
                         ],
                         function (err, res) {
                             if (err) throw err;
-                            console.log("\n Congrats on your purchase. Thank You for shopping. \n")
-                            // reloads the list of products and prompts
-                            // queryItems();
+
+                            console.log("\nYour Total: $" + balance + "\nCongrats on your purchase. Thank You for shopping.\n")
                             connection.end();
                         }
                     );
