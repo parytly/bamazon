@@ -9,12 +9,16 @@ Using Node.js, the application will welcome in the customer, and display the lis
     - department
     - price (cost to customer)
     - quantity (how much of the product is available in stores)
+![Table of shopping products](assets/item_table.png)
 
 The app prompt users with two messages.
     - The first should ask them the ID of the product they would like to buy.
     - The second message should ask how many units of the product they would like to buy.
+    ![prompts](assets/prompt.png)
 
-    - If the customer select an item that has insufficient stock quantity, a message will appear "insufficient quantity! Please choose a lower amount."
+    - If the customer select an item that has insufficient stock quantity, a message will appear "insufficient quantity! Please select again"
         - Then the app will bring the customer back to the prompt to buy again.
+![insufficient](assets/insufficient.png)
 
 Once the order is fullfilled, the quantity of that purchase item will update in Mysql and a message will show the customer's total balance and purchased item.
+![Order details](assets/balance.png)

@@ -92,7 +92,7 @@ function startPrompt() {
                             tableOrder.push(
                                 { 'Item purchased': itemPurchased },
                                 { 'Quantity': answer.quantity },
-                                { 'Total balance': balance }
+                                { 'Total balance': balance.toFixed(2) }
                             );
                             console.log("\nCongratulations on your purchase. Thank You for shopping at Bamazon.\n");
 
