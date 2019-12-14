@@ -8,6 +8,8 @@ var table = new Table({
     colWidths: [10, 20, 20, 20, 20]
 });
 
+var tableOrder = new Table();
+
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -42,14 +44,12 @@ const queryItems = function () {
 };
 
 // The app should then prompt users with two messages.
-// The first should ask them the ID of the product they would like to buy.
-
 function startPrompt() {
     connection.query("SELECT * FROM  products", function (err, res) {
         if (err) throw err;
         inquirer
             .prompt([
-                {
+                {// The first should ask them the ID of the product they would like to buy.
                     name: 'shop',
                     type: 'input',
                     message: '\nWhat do you like to buy? (enter in the item-id)',
@@ -61,7 +61,7 @@ function startPrompt() {
                         return productChoices;
                     }
                 },
-                // The second message should ask how many units of the product they would like to buy.
+                // The second message ask how many units of the product they would like to buy.
                 {
                     name: 'quantity',
                     type: 'number',
@@ -70,7 +70,7 @@ function startPrompt() {
             ]).then(function (answer) {
                 var selectedItemQuantity = res[answer.shop - 1].quantity
                 var newQuantity = selectedItemQuantity - answer.quantity
-
+                var itemPurchased = res[answer.shop - 1].product_name
                 var balance = res[answer.shop - 1].price * answer.quantity
 
                 if (answer.quantity > selectedItemQuantity) {
@@ -89,8 +89,15 @@ function startPrompt() {
                         ],
                         function (err, res) {
                             if (err) throw err;
+                            tableOrder.push(
+                                { 'Item purchased': itemPurchased },
+                                { 'Quantity': answer.quantity },
+                                { 'Total balance': balance }
+                            );
+                            console.log("\nCongratulations on your purchase. Thank You for shopping at Bamazon.\n");
 
-                            console.log("\nYour Total: $" + balance + "\nCongrats on your purchase. Thank You for shopping.\n")
+                            console.log(tableOrder.toString());
+
                             connection.end();
                         }
                     );
@@ -98,5 +105,6 @@ function startPrompt() {
             })
     });
 }
+
 
 
